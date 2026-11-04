@@ -16,6 +16,13 @@ public class Main {
         //debug for file reading
         file = new File("src/graphinput.txt");
 
+        Main main = new Main();
+
+        ArrayList<Integer[][]> fileContents = main.parseFile(file);
+
+    }
+
+    public ArrayList<Integer[][]> parseFile(File file) {
         // store the results from the file
         ArrayList<Integer[][]> fileContents = new ArrayList<Integer[][]>();
 
@@ -27,7 +34,7 @@ public class Main {
 
                 // loop through and find index after num vertices
                 for (int i = 0; i < edges.length() - 1; i++) {
-                    if(edges.charAt(i) == '(') {trim = i; break;}
+                    if(edges.charAt(i) == '(' && numEdges == 0) {trim = i;}
                     if(edges.charAt(i) == ',') {numEdges++;}
                 }
 
@@ -37,18 +44,20 @@ public class Main {
 
                 String[] strTemp = edges.substring(1).split("[(),]+");
 
-                for(int i = 0, j = 0; i < temp.length - 1; i++, j++) {
-                    temp[i][j%2] = Integer.parseInt(strTemp[j]);
-                    ++j;
-                    temp[i][j%2] = Integer.parseInt(strTemp[j]);
+                for(int i = 0, j = 0; i < temp.length; i++) {
+                    temp[i][j%2] = Integer.parseInt(strTemp[j++]);
+                    temp[i][j%2] = Integer.parseInt(strTemp[j++]);
                 }
 
-                for(int i = 0; i < temp.length -1; i++) {
-                    for (int j : temp[i]) {
-                        System.out.print(j);
-                    }
-                    System.out.print(" ");
-                }
+//                DEBUG PLEASE IGNORE FOR NOW DELETE FOR SUBMISSION
+//                for(int i = 0; i < temp.length; i++) {
+//                    for (int j : temp[i]) {
+//                        System.out.print(j);
+//                    }
+//                    System.out.print(" ");
+//                }
+//
+//                System.out.println();
 
                 fileContents.add(temp);
             }
@@ -57,5 +66,6 @@ public class Main {
         }
 
         // fileContents contains an arraylist of 2d integer arrays containing the coordinates
+        return fileContents;
     }
 }
