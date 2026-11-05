@@ -14,9 +14,6 @@ public class Main {
             file = new File(args[0]);
         }
 
-//        //debug for file reading
-//        file = new File("src/graphinput.txt");
-
         Main main = new Main();
 
         ArrayList<int[][]> fileContents = main.parseFile(file);
@@ -78,6 +75,7 @@ public class Main {
             System.out.printf("%d %s: ", temp.size(), temp.size() > 1 ? "connected components" : "connected component");
 
             for (int j = 0; j < temp.size(); j++) {
+                temp.get(j).sort(null);
                 System.out.print("{");
                 for(int k = 0; k < temp.get(j).size(); k++) {
                     System.out.printf("%s", temp.get(j).get(k));
