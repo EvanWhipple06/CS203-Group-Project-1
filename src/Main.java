@@ -72,7 +72,7 @@ public class Main {
             // make a storage variable for an individual line's
             ArrayList<ArrayList<Integer>> temp = getComponents(fileContents.get(i));
             System.out.printf("Graph %d:\n", i+1);
-            System.out.printf("%d %s: ", temp.size(), temp.size() > 1 ? "connected components" : "connected component");
+            System.out.printf("%d %s ", temp.size(), temp.size() > 1 ? "connected components:" : "connected component: ");
 
             for (int j = 0; j < temp.size(); j++) {
                 temp.get(j).sort(null);
