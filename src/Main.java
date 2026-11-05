@@ -8,22 +8,20 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) throws FileNotFoundException {
         // COMMENTED OUT FOR DEBUGGING, TAKES FIRST INPUTTED VALUE FOR CLA AND ASSIGNS IT TO fName VARIABLE
-        File file;
+        File file = null;
 
-//        if (args.length > 0) {
-//            file = new File("src/"+args[0]);
-//        }
+        if (args.length > 0) {
+            file = new File(args[0]);
+        }
 
-        //debug for file reading
-        file = new File("src/graphinput.txt");
+//        //debug for file reading
+//        file = new File("src/graphinput.txt");
 
         Main main = new Main();
 
         ArrayList<int[][]> fileContents = main.parseFile(file);
 
         main.printGUI(fileContents);
-
-//        ArrayList<ArrayList<Integer>> temp = main.getComponents(fileContents.get(1));
     }
 
     // parses the graph input file provided into an arraylist of 2d arrays
