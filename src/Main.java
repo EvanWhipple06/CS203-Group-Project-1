@@ -23,7 +23,7 @@ public class Main {
 
         main.printGUI(fileContents);
 
-        ArrayList<ArrayList<Integer>> temp = main.getComponents(fileContents.get(1));
+//        ArrayList<ArrayList<Integer>> temp = main.getComponents(fileContents.get(1));
     }
 
     // parses the graph input file provided into an arraylist of 2d arrays
@@ -58,16 +58,6 @@ public class Main {
                     temp[i][j%2] = Integer.parseInt(strTemp[j++]);
                 }
 
-//                DEBUG PLEASE IGNORE FOR NOW DELETE FOR SUBMISSION
-//                for(int i = 0; i < temp.length; i++) {
-//                    for (int j : temp[i]) {
-//                        System.out.print(j);
-//                    }
-//                    System.out.print(" ");
-//                }
-//
-//                System.out.println();
-
                 fileContents.add(temp);
             }
         } catch(Exception ex) {
@@ -82,10 +72,24 @@ public class Main {
     public void printGUI(ArrayList<int[][]> fileContents) {
         System.out.println("----------------------------------------------------------");
 
+        // iterate through file contents (each individual line is its own tree)
         for (int i = 0; i < fileContents.size(); i++) {
+            // make a storage variable for an individual line's
             ArrayList<ArrayList<Integer>> temp = getComponents(fileContents.get(i));
             System.out.printf("Graph %d:\n", i+1);
             System.out.printf("%d %s: ", temp.size(), temp.size() > 1 ? "connected components" : "connected component");
+
+            for (int j = 0; j < temp.size(); j++) {
+                System.out.print("{");
+                for(int k = 0; k < temp.get(j).size(); k++) {
+                    System.out.printf("%s", temp.get(j).get(k));
+                    if(k != temp.get(j).size() - 1) {
+                        System.out.print(",");
+                    }
+                }
+                System.out.print("} ");
+            }
+            System.out.println();
         }
 
         System.out.println("----------------------------------------------------------");
@@ -93,74 +97,51 @@ public class Main {
 
     // get the components of a tree and return them
     public ArrayList<ArrayList<Integer>> getComponents(int[][] inputGraph) {
-        /* idea 2
-            1) one arraylist stores the original graph (arrlist of int[]) ([1][2], [2],[3])
-            2) one arraylist stores integers the represent each unique value present in the graph components list
-            3) one arraylist of the arraylists in number 3
+        // changes inputGraph type so it works with getComponent()
+        ArrayList<int[]> newInputGraph = new ArrayList<>(Arrays.asList(inputGraph));
 
-            start by taking the first node from 1) and putting each of those numbers into 2, remove first node of 1)
-            then iterate through 1) and if any numbers from [a][b] match any numbers in 2), do a sorted insertion for new unique values. remove from 1)
-            when we get to the end, repeat until no swaps are performed (this is to eliminate any values that become valid after another was added to 1) )
-
-            add 2) to 3)
-            if 1) is not empty, clear 2) and start the process on the remainder of 1)
-         */
-
-       // initialize arrayLists
-        ArrayList<int[]> graph = new ArrayList<>(Arrays.asList(inputGraph)), graphComponents = new ArrayList<>();
+        // initialize variables
+        ArrayList<Integer> visited = new ArrayList<>();
         ArrayList<ArrayList<Integer>> components = new ArrayList<>();
 
-        // while the input graph is not empty, run these operations to find components
-        while(!graph.isEmpty()) {
-            // add new arraylist and clear graphComponents. This lets you find another list of components if you already have one
-            components.add(new ArrayList<>());
-            graphComponents.clear();      // call recursive function to get Arraylist of the connected components
-            graphComponents = getComponentsRec(graph, graphComponents);
+        // go through every edge in the graph
+        for (int i = 0; i < newInputGraph.size(); i++) {
+            // check both vertices in each edge
+            for (int j = 0; j < newInputGraph.get(i).length; j++) {
+                // if vertex is unvisited, start a new DFS
+                if (!visited.contains(newInputGraph.get(i)[j])) {
 
-            // add the numbers from the graphComponents to the return arrayList, if its a duplicate dont add it
-            for(int i = 0; i < graphComponents.size(); i++) {
-                if (!components.getLast().contains(graphComponents.get(i)[0])) {
-                    components.getLast().add(graphComponents.get(i)[0]);
-                }
-                if (!components.getLast().contains(graphComponents.get(i)[1])) {
-                    components.getLast().add(graphComponents.get(i)[1]);
+                    // create a new component and call DFS
+                    ArrayList<Integer> component = new ArrayList<>();
+                    DFS(newInputGraph.get(i)[j], newInputGraph, visited, component);
+
+                    // save completed component to be added to the return arraylist
+                    components.add(component);
                 }
             }
-            // SORTS THE ARRAYLIST FOR NEATER PRINTING, MIGHT NOT BE ALLOWED, ASK MY PROFESSOR
-            components.getLast().sort(null);
         }
+
         return components;
     }
 
-    public ArrayList<int[]> getComponentsRec(ArrayList<int[]> graph, ArrayList<int[]> graphComponents) {
-        if (graphComponents.isEmpty()) {
-            graphComponents.addFirst(graph.getFirst());
-            graph.removeFirst();
-        }
+    // recursive implementation of a depth first search
+    public void DFS(int current, ArrayList<int[]> graph, ArrayList<Integer> visited, ArrayList<Integer> graphComponents) {
+        // add current node to visited (this is our traversal tracker) then add the unvisited component to the DFS call arraylist
+        visited.add(current);
+        graphComponents.add(current);
 
-        boolean baseCase = true;
-        for (int j = 0; j < graph.size(); j++) {
+        // iterate through input graph
+        for (int i = 0; i < graph.size(); i++) {
+            // track both node values
+            int a = graph.get(i)[0];
+            int b = graph.get(i)[1];
 
-            int x = graphComponents.getLast()[0];
-            int y = graphComponents.getLast()[1];
-            int a = graph.get(j)[0];
-            int b = graph.get(j)[1];
-
-            // if either of the innermost numbers match any of the unique numbers in the components list, break and add the new unique values then restart the loop
-            if (a == x || b == x || a == y || b == y) {
-                graphComponents.add(new int[] {a, b});
-
-                // then remove node from graph
-                graph.remove(j);
-                baseCase = false;
-                break;
+            // if node value matches current value and hasnt been visited jump to that node now
+            if (a == current && !visited.contains(b)) {
+                DFS(b, graph, visited, graphComponents);
+            } else if (b == current && !visited.contains(a)) {
+                DFS(a, graph, visited, graphComponents);
             }
-        }
-
-        if(baseCase) {
-            return graphComponents;
-        } else {
-            return getComponentsRec (graph, graphComponents);
         }
     }
 }
