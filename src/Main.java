@@ -21,14 +21,9 @@ public class Main {
 
         ArrayList<int[][]> fileContents = main.parseFile(file);
 
-        ArrayList<ArrayList<Integer>> temp = main.getComponents(fileContents.get(1));
+        main.printGUI(fileContents);
 
-        for (int i = 0; i < temp.size(); i++) {
-            for (int j : temp.get(i)) {
-                System.out.println(j);
-            }
-            System.out.println();
-        }
+        ArrayList<ArrayList<Integer>> temp = main.getComponents(fileContents.get(1));
     }
 
     // parses the graph input file provided into an arraylist of 2d arrays
@@ -84,8 +79,16 @@ public class Main {
     }
 
     // print a gui displaying which tree is being processed and how many components are in it
-    public void printGUI() {
+    public void printGUI(ArrayList<int[][]> fileContents) {
+        System.out.println("----------------------------------------------------------");
 
+        for (int i = 0; i < fileContents.size(); i++) {
+            ArrayList<ArrayList<Integer>> temp = getComponents(fileContents.get(i));
+            System.out.printf("Graph %d:\n", i+1);
+            System.out.printf("%d %s: ", temp.size(), temp.size() > 1 ? "connected components" : "connected component");
+        }
+
+        System.out.println("----------------------------------------------------------");
     }
 
     // get the components of a tree and return them
@@ -104,61 +107,60 @@ public class Main {
          */
 
        // initialize arrayLists
-        ArrayList<int[]> graph = new ArrayList<>(Arrays.asList(inputGraph));
+        ArrayList<int[]> graph = new ArrayList<>(Arrays.asList(inputGraph)), graphComponents = new ArrayList<>();
         ArrayList<ArrayList<Integer>> components = new ArrayList<>();
 
-        boolean run = true;
+        // while the input graph is not empty, run these operations to find components
+        while(!graph.isEmpty()) {
+            // add new arraylist and clear graphComponents. This lets you find another list of components if you already have one
+            components.add(new ArrayList<>());
+            graphComponents.clear();      // call recursive function to get Arraylist of the connected components
+            graphComponents = getComponentsRec(graph, graphComponents);
 
-        while (run) {
-            // if the last arraylist in components is empty then move the first element from graph to components
-            // move the first node into the components arraylist if they arent the same number, if they are only add one of it
-            if (!graph.isEmpty()) {
-                components.add(new ArrayList<>());
-
-                if (graph.getFirst()[0] != graph.getFirst()[1]) {
-                    components.getLast().add(graph.getFirst()[1]);
+            // add the numbers from the graphComponents to the return arrayList, if its a duplicate dont add it
+            for(int i = 0; i < graphComponents.size(); i++) {
+                if (!components.getLast().contains(graphComponents.get(i)[0])) {
+                    components.getLast().add(graphComponents.get(i)[0]);
                 }
-                components.getLast().addFirst(graph.getFirst()[0]);
-
-                // remove first node from graph
-                graph.removeFirst();
-            }
-
-            run = false;
-            // iterate through graph, and compare each index of the inner most array to each element of components
-            for (int i = 0; i < graph.size(); i++) {
-                for (int j = 0; j < components.getLast().size(); j++) {
-                    int a = graph.get(i)[0];
-                    int b = graph.get(i)[1];
-                    int x = components.getLast().get(j);
-
-                    // if either of the innermost numbers match any of the unique numbers in the components list, break and add the new unique values then restart the loop
-                    if (a == x || b == x) {
-                        // if number is missing from component add it
-                        if (!components.getLast().contains(a)) {
-                            sortedInsertion(components, a);
-                            run = true;
-                        }
-                        if (!components.getLast().contains(b)) {
-                            sortedInsertion(components, b);
-                            run = true;
-                        }
-
-                        // then remove node from graph
-                        graph.remove(i);
-                    }
+                if (!components.getLast().contains(graphComponents.get(i)[1])) {
+                    components.getLast().add(graphComponents.get(i)[1]);
                 }
             }
+            // SORTS THE ARRAYLIST FOR NEATER PRINTING, MIGHT NOT BE ALLOWED, ASK MY PROFESSOR
+            components.getLast().sort(null);
         }
         return components;
     }
 
-    // sorted insertion of value into components arraylist
-    public void sortedInsertion(ArrayList<ArrayList<Integer>> arr, int value) {
-        for (int i = 0; i < arr.getLast().size(); i++) {
-            if (value < arr.getLast().get(i)) {arr.getLast().add(i, value); return;}
+    public ArrayList<int[]> getComponentsRec(ArrayList<int[]> graph, ArrayList<int[]> graphComponents) {
+        if (graphComponents.isEmpty()) {
+            graphComponents.addFirst(graph.getFirst());
+            graph.removeFirst();
         }
 
-        arr.getLast().addLast(value);
+        boolean baseCase = true;
+        for (int j = 0; j < graph.size(); j++) {
+
+            int x = graphComponents.getLast()[0];
+            int y = graphComponents.getLast()[1];
+            int a = graph.get(j)[0];
+            int b = graph.get(j)[1];
+
+            // if either of the innermost numbers match any of the unique numbers in the components list, break and add the new unique values then restart the loop
+            if (a == x || b == x || a == y || b == y) {
+                graphComponents.add(new int[] {a, b});
+
+                // then remove node from graph
+                graph.remove(j);
+                baseCase = false;
+                break;
+            }
+        }
+
+        if(baseCase) {
+            return graphComponents;
+        } else {
+            return getComponentsRec (graph, graphComponents);
+        }
     }
 }
