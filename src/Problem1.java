@@ -1,11 +1,10 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class Main {
+public class Problem1 {
     public static void main(String[] args) throws FileNotFoundException {
         // COMMENTED OUT FOR DEBUGGING, TAKES FIRST INPUTTED VALUE FOR CLA AND ASSIGNS IT TO fName VARIABLE
         File file = null;
@@ -14,7 +13,7 @@ public class Main {
             file = new File(args[0]);
         }
 
-        Main main = new Main();
+        Problem1 main = new Problem1();
 
         ArrayList<int[][]> fileContents = main.parseFile(file);
 
