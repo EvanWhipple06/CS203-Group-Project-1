@@ -1,3 +1,13 @@
+/*
+ * Name: Evan Whipple Austyn Streeter
+ * Course: CS203
+ * Semester: Fall 2026
+ * Assignment: Group Activity #1
+ * Problem: Connected Components / K-Selection
+ * Description: Finds and displays all connected components
+ *              in an undirected graph using DFS.
+ */
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;

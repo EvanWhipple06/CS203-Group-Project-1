@@ -1,6 +1,13 @@
-// Author: Austyn Streeter
-// Term: Fall 2026 Date: 11/2/2026
-// Project: CS-203 Group Activity 1
+/*
+ * Name: Evan Whipple Austyn Streeter
+ * Course: CS203
+ * Semester: Fall 2026
+ * Assignment: Group Activity #1
+ * Problem: K-Selection
+ * Description: Finds the kth smallest element in an unsorted
+ *              array without sorting the array using the
+ *              Quickselect algorithm.
+ */
 
 import java.util.Scanner;
 
