@@ -4,7 +4,7 @@
 
 import java.util.Scanner;
 
-public class Main {
+public class Problem2 {
 
     public static void main(String[] args) {
         runProgram();
